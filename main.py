@@ -32,7 +32,6 @@ isElder=False
 startDate = datetime(2024, 10, 1) #October 2024 (year, month, day)
 
 
-
 def draw_month(c, year, month):
     # Set font and draw the month title
     c.setFont("Helvetica-Bold", 24)
@@ -49,11 +48,26 @@ def draw_month(c, year, month):
     for i, day in enumerate(days):
         c.drawString(0.75 * inch + i * inch, 9 * inch, day)
 
-    # Draw the days of the month
-    for week in range(len(month_cal)):
-        for day in range(len(month_cal[week])):
+    # Grid layout variables
+    top_margin = 8.5 * inch
+    left_margin = 0.75 * inch
+    cell_width = inch
+    cell_height = inch
+    num_weeks = len(month_cal)
+
+    # Draw the grid and numbers for the days of the month
+    for week in range(num_weeks):
+        for day in range(7):
+            x = left_margin + day * cell_width
+            y = top_margin - week * cell_height
+
+            # Draw the border for each day
+            c.rect(x, y - cell_height, cell_width, cell_height)
+
+            # Add the day number in the top left of each box
             if month_cal[week][day] != 0:
-                c.drawString(0.75 * inch + day * inch, 8.5 * inch - week * inch, str(month_cal[week][day]))
+                c.drawString(x + 0.1 * inch, y - 0.2 * inch, str(month_cal[week][day]))
+
 
 
 def create_mission_calendar():
