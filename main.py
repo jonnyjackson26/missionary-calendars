@@ -99,6 +99,31 @@ def add_image_page(c, image_path):
     c.drawImage(image_path, 0, 0, width=letter[1], height=letter[0])  # Draw the image full-page in landscape
     c.showPage()  # End the image page
 
+def add_title_page(c):
+    # Add title page
+    page_width, page_height = landscape(letter)
+    c.setFont("Helvetica-Bold", 36)
+    title = missionaryName
+    title_width = c.stringWidth(title, "Helvetica-Bold", 36)
+    c.drawString((page_width - title_width) / 2, page_height / 2 + 0.5 * inch, title)
+
+    c.setFont("Helvetica-Bold", 24)
+    mission_info = missionName
+    mission_info_width = c.stringWidth(mission_info, "Helvetica-Bold", 24)
+    c.drawString((page_width - mission_info_width) / 2, page_height / 2 - 0.5 * inch, mission_info)
+
+    c.showPage()
+
+def add_final_page(c):
+    # Add final page
+    page_width, page_height = landscape(letter)
+    c.setFont("Helvetica", 24)
+    text = "missionary-calendars.com"
+    text_width = c.stringWidth(text, "Helvetica", 24)
+    c.drawString((page_width - text_width) / 2, page_height / 2, text)
+    c.showPage()
+
+
 def create_mission_calendar():
     # Determine calendar duration
     endDate = startDate + timedelta(days=2 * 365) if isElder else startDate + timedelta(days=18 * 30)
@@ -107,6 +132,8 @@ def create_mission_calendar():
     title_prefix = "Elder" if isElder else "Sister"
     cal_name = f"{title_prefix} {missionaryName}'s Mission Calendar"
     c = canvas.Canvas(f"{cal_name}.pdf", pagesize=landscape(letter))
+
+    add_title_page(c)
 
     current_date = startDate
     image_files = sorted([f for f in os.listdir(pics_folder) if os.path.isfile(os.path.join(pics_folder, f))])
@@ -135,6 +162,7 @@ def create_mission_calendar():
         # Toggle between image and month
         add_image = not add_image
 
+    add_final_page(c)
     c.save()
 
 # Generate the calendar with images
