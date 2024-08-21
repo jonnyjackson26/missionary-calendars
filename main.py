@@ -126,15 +126,14 @@ def create_mission_calendar():
             draw_month(c, current_date.year, current_date.month)
             # Ensure to show page after adding a month
             c.showPage()
+            # Move to the next month
+            if current_date.month == 12:
+                current_date = datetime(current_date.year + 1, 1, 1)
+            else:
+                current_date = datetime(current_date.year, current_date.month + 1, 1)
 
         # Toggle between image and month
         add_image = not add_image
-
-        # Move to the next month
-        if current_date.month == 12:
-            current_date = datetime(current_date.year + 1, 1, 1)
-        else:
-            current_date = datetime(current_date.year, current_date.month + 1, 1)
 
     c.save()
 
