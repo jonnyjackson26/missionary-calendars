@@ -19,12 +19,13 @@ def draw_month(c, year, month):
     page_width, page_height = landscape(letter)
     left_margin = 0.5 * inch
     right_margin = 0.5 * inch
-    top_margin = 1 * inch
+    top_margin = 1.5 * inch  # Top margin for month title
+    days_of_week_margin = 0.5 * inch  # Margin between days of the week and the grid
     bottom_margin = 1 * inch
     
     # Dimensions for the grid
     grid_width = page_width - left_margin - right_margin
-    grid_height = page_height - top_margin - bottom_margin
+    grid_height = page_height - top_margin - bottom_margin - days_of_week_margin
     
     cell_width = grid_width / 7
     cell_height = grid_height / 6
@@ -33,36 +34,35 @@ def draw_month(c, year, month):
     c.setFont("Helvetica-Bold", 24)
     title = f"{calendar.month_name[month]} {year}"
     title_width = c.stringWidth(title, "Helvetica-Bold", 24)
-    c.drawString((page_width - title_width) / 2, page_height - top_margin / 2, title)
+    c.drawString((page_width - title_width) / 2, page_height - top_margin + 0.5 * inch, title)
 
     # Get the month's calendar as a matrix
     month_cal = calendar.monthcalendar(year, month)
+    num_weeks = len(month_cal)  # Get the number of weeks in the month
 
-    # Set font for the days
+    # Set font for the days of the week
     c.setFont("Helvetica", 12)
 
     # Draw the days of the week
     days = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
+    days_of_week_y = page_height - top_margin - 0.1 * inch  # Position below the month title
+
     for i, day in enumerate(days):
         c.drawString(left_margin + i * cell_width + (cell_width - c.stringWidth(day, "Helvetica", 12)) / 2, 
-                     page_height - top_margin / 2 - 0.2 * inch, day)
+                     days_of_week_y, day)
 
     # Draw the grid and numbers for the days of the month
-    for week in range(6):  # Fixed number of weeks
+    for week in range(num_weeks):  # Use the actual number of weeks
         for day in range(7):
             x = left_margin + day * cell_width
-            y = page_height - top_margin - week * cell_height - cell_height
+            y = page_height - top_margin - (week + 1) * cell_height - days_of_week_margin
             
             # Draw the border for each day
             c.rect(x, y, cell_width, cell_height)
             
             # Add the day number in the top left of each box
-            try:
-                if month_cal[week][day] != 0:
-                    c.drawString(x + 0.1 * inch, y - 0.2 * inch, str(month_cal[week][day]))
-            except IndexError:
-                # If there's an index error, continue
-                continue
+            if month_cal[week][day] != 0:
+                c.drawString(x + 0.1 * inch, y + cell_height - 0.2 * inch, str(month_cal[week][day]))
 
 
 def add_image_page(c, image_path):
