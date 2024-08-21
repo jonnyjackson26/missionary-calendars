@@ -2,7 +2,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from reportlab.pdfgen import canvas
 import calendar
-from datetime import datetime
+from datetime import datetime, timedelta
 
 def notes():
     pass
@@ -28,7 +28,7 @@ def notes():
     #choose language
 missionaryName="Jonathan Jackson"
 missionName="Dominican Republic, Santo Domingo West Mission"
-isElder=True
+isElder=False
 startDate = datetime(2024, 10, 1) #October 2024 (year, month, day)
 
 
@@ -56,23 +56,27 @@ def draw_month(c, year, month):
                 c.drawString(0.75 * inch + day * inch, 8.5 * inch - week * inch, str(month_cal[week][day]))
 
 
-def create_two_year_calendar(startDate):
+def create_mission_calendar():
+    # Determine calendar duration
+    endDate = startDate + timedelta(days=2 * 365) if isElder else startDate + timedelta(days=18 * 30)
+
+    # Determine the title based on Elder/Sister
     title_prefix = "Elder" if isElder else "Sister"
     cal_name = f"{title_prefix} {missionaryName}'s Mission Calendar"
-    c = canvas.Canvas(f"{cal_name}.pdf", pagesize=letter)     # Create a canvas for a letter-sized PDF
+    c = canvas.Canvas(f"{cal_name}.pdf", pagesize=letter)
 
-    start_year = startDate.year
-    start_month = startDate.month
+    current_date = startDate
+    while current_date <= endDate:
+        draw_month(c, current_date.year, current_date.month)
+        c.showPage()  # Create a new page after each month
+        # Move to the next month
+        if current_date.month == 12:
+            current_date = datetime(current_date.year + 1, 1, 1)
+        else:
+            current_date = datetime(current_date.year, current_date.month + 1, 1)
 
-    # Loop through two years starting from the given start date
-    for year in range(start_year, start_year + 2):
-        for month in range(start_month, 13):
-            draw_month(c, year, month)
-            c.showPage()  # Create a new page after each month
-
-        start_month = 1  # Reset to January after the first year
     c.save()
 
 
 # Generate the calendar for the years 2024 and 2025
-create_two_year_calendar(startDate)
+create_mission_calendar()
